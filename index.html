@@ -2,42 +2,87 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerador de QR Code - Spotify</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; max-width: 500px; }
-        input { width: 100%; padding: 10px; margin-bottom: 10px; }
-        button { padding: 10px 20px; background-color: #1DB954; color: white; border: none; cursor: pointer; }
-        #qrcode { margin-top: 20px; padding: 10px; background: white; display: inline-block; }
-        .erro { color: red; margin-top: 10px; display: none; }
+        body { 
+            font-family: Arial, sans-serif; 
+            padding: 20px; 
+            max-width: 500px; 
+            margin: 0 auto; /* Centraliza o conteúdo na tela */
+        }
+        label {
+            font-weight: bold;
+            display: block; /* Quebra de linha mais limpa */
+            margin-bottom: 8px;
+        }
+        input { 
+            width: 100%; 
+            padding: 10px; 
+            margin-bottom: 10px; 
+            box-sizing: border-box; /* Evita que o padding quebre a largura */
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button { 
+            padding: 10px 20px; 
+            background-color: #1DB954; 
+            color: white; 
+            border: none; 
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer; 
+            width: 100%; /* Botão ocupando a largura total fica melhor no celular */
+        }
+        button:hover { background-color: #1ed760; } /* Efeito ao passar o mouse */
+        #qrcode { 
+            margin-top: 20px; 
+            padding: 10px; 
+            background: white; 
+            display: flex; /* Flexbox para centralizar o QR code dentro da div */
+            justify-content: center;
+        }
+        .erro { 
+            color: #d32f2f; 
+            margin-top: 10px; 
+            display: none; 
+            font-size: 0.9em;
+        }
     </style>
 </head>
 <body>
 
     <h2>Criar QR Code da Música</h2>
     
-    <label>Cole o link do Spotify aqui:</label>
+    <label for="linkSpotify">Cole o link da música do Spotify aqui:</label>
     <input type="text" id="linkSpotify" placeholder="Ex: https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT">
     
     <button onclick="gerarQRCode()">Gerar QR Code</button>
-    <p id="mensagemErro" class="erro">Link inválido! Não consegui encontrar o ID da música.</p>
+    <p id="mensagemErro" class="erro">Link inválido! Certifique-se de copiar o link de uma "música" (track) no Spotify.</p>
 
     <div id="qrcode"></div>
 
     <script>
-        // A URL base do SEU site (onde a página intermediária está hospedada)
         const URL_DO_SEU_SITE = "https://bernardosantanna.github.io/abrir-musica/?id="; 
 
+        // Adiciona evento para o usuário poder usar a tecla "Enter"
+        document.getElementById("linkSpotify").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                gerarQRCode();
+            }
+        });
+
         function gerarQRCode() {
-            const linkInput = document.getElementById('linkSpotify').value;
+            const linkInput = document.getElementById('linkSpotify').value.trim(); // .trim() remove espaços em branco extras
             const containerQR = document.getElementById('qrcode');
             const mensagemErro = document.getElementById('mensagemErro');
             
-            // Limpa o QR code antigo e esconde o erro
             containerQR.innerHTML = "";
             mensagemErro.style.display = 'none';
 
-            // Extrai o ID
+            // Regex mantido (é excelente!)
             const regex = /(?:track\/|spotify:track:)([a-zA-Z0-9]{22})/;
             const match = linkInput.match(regex);
             
@@ -45,7 +90,6 @@
                 const idDaMusica = match[1];
                 const linkFinal = URL_DO_SEU_SITE + idDaMusica;
                 
-                // Gera o novo QR Code
                 new QRCode(containerQR, {
                     text: linkFinal,
                     width: 200,
@@ -55,7 +99,6 @@
                     correctLevel : QRCode.CorrectLevel.H
                 });
             } else {
-                // Mostra erro se não achar o ID
                 mensagemErro.style.display = 'block';
             }
         }
