@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Gerador de QR Code - Spotify</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 500px; }
+        input { width: 100%; padding: 10px; margin-bottom: 10px; }
+        button { padding: 10px 20px; background-color: #1DB954; color: white; border: none; cursor: pointer; }
+        #qrcode { margin-top: 20px; padding: 10px; background: white; display: inline-block; }
+        .erro { color: red; margin-top: 10px; display: none; }
+    </style>
+</head>
+<body>
+
+    <h2>Criar QR Code da Música</h2>
+    
+    <label>Cole o link do Spotify aqui:</label>
+    <input type="text" id="linkSpotify" placeholder="Ex: https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT">
+    
+    <button onclick="gerarQRCode()">Gerar QR Code</button>
+    <p id="mensagemErro" class="erro">Link inválido! Não consegui encontrar o ID da música.</p>
+
+    <div id="qrcode"></div>
+
+    <script>
+        // A URL base do SEU site (onde a página intermediária está hospedada)
+        const URL_DO_SEU_SITE = "https://seusite.com.br/?id="; 
+
+        function gerarQRCode() {
+            const linkInput = document.getElementById('linkSpotify').value;
+            const containerQR = document.getElementById('qrcode');
+            const mensagemErro = document.getElementById('mensagemErro');
+            
+            // Limpa o QR code antigo e esconde o erro
+            containerQR.innerHTML = "";
+            mensagemErro.style.display = 'none';
+
+            // Extrai o ID
+            const regex = /(?:track\/|spotify:track:)([a-zA-Z0-9]{22})/;
+            const match = linkInput.match(regex);
+            
+            if (match && match[1]) {
+                const idDaMusica = match[1];
+                const linkFinal = URL_DO_SEU_SITE + idDaMusica;
+                
+                // Gera o novo QR Code
+                new QRCode(containerQR, {
+                    text: linkFinal,
+                    width: 200,
+                    height: 200,
+                    colorDark : "#000000",
+                    colorLight : "#ffffff",
+                    correctLevel : QRCode.CorrectLevel.H
+                });
+            } else {
+                // Mostra erro se não achar o ID
+                mensagemErro.style.display = 'block';
+            }
+        }
+    </script>
+
+</body>
+</html>
