@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carregando sua música...</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #191414; /* Cor de fundo do Spotify */
+            color: white;
+            margin: 0;
+            text-align: center;
+        }
+        .btn {
+            background-color: #1DB954; /* Verde do Spotify */
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+            display: none; /* Fica escondido até precisarmos dele */
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Preparando a sua música... 🎵</h2>
+    <p id="mensagem">Se o Spotify não abrir automaticamente, clique no botão abaixo.</p>
+    
+    <a href="#" id="btn-tocar" class="btn">Tocar no Spotify</a>
+
+    <script>
+        // 1. Pega o ID da música que veio na URL (Ex: ?id=4cOdK2wGLETKBW3PvgPWqT)
+        const urlParams = new URLSearchParams(window.location.search);
+        const trackId = urlParams.get('id');
+
+        if (trackId) {
+            // 2. Monta os links
+            // Link URI nativo (Tenta abrir o app do Spotify direto na música)
+            const spotifyAppUri = `spotify:track:${trackId}`;
+            // Link Universal (Abre a versão web caso a pessoa não tenha o app)
+            const spotifyWebUrl = `https://open.spotify.com/track/${trackId}`;
+
+            // Configura o botão de fallback
+            const btn = document.getElementById('btn-tocar');
+            btn.href = spotifyWebUrl;
+            btn.style.display = 'inline-block';
+
+            // 3. Tenta redirecionar automaticamente para o App
+            // O navegador vai tentar abrir o app. Se falhar (ex: app não instalado), 
+            // após 2 segundos ele redireciona para a versão Web.
+            window.location.href = spotifyAppUri;
+
+            setTimeout(function() {
+                // Se a página ainda estiver aberta após 2.5s, provavelmente o app não abriu.
+                // Redirecionamos para a web do Spotify.
+                window.location.href = spotifyWebUrl;
+            }, 2500);
+
+        } else {
+            document.querySelector('h2').innerText = "Ops!";
+            document.getElementById('mensagem').innerText = "Nenhuma música foi informada no QR Code.";
+        }
+    </script>
+</body>
+</html>
